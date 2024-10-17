@@ -1,0 +1,80 @@
+1. Project Structure
+2. Project Package
+3. Route config
+4. App.js config
+5. PostMan initial  config
+6. Email Credential config
+7. Declear Model properties
+
+....................................................................................
+#### 2nd class ..................
+1. Registation 
+2. Login 
+
+
+
+
+1. mailsender = demo Crendentional (sir)
+2. Package .......yarn install/download............................
+   @@@ yarn add express
+   1. npm install express 
+
+   2. "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.6.1",
+    "nodemailer": "^6.9.15",
+    "nodemon": "^3.1.4"
+  }
+
+3. Email  : 
+   1. nodemailer => Credential provide any company sender email.
+
+2. 
+   let transparter = nodeemailer.createTransport({
+  host: "mail.teamrabbil.com",
+  port: 25,
+  auth: {
+    user: "mail.teamrabbil.com"
+    pass: "~sR4[bhaC[Qs"
+  },tis: {
+    reiectUnauthorized: false
+  },
+
+})
+
+
+4. code stander AI =>get 10/8
+
+5. "type": "module",
+
+6. import * as TaskController from "../app/controllers/TaskController.js";
+
+7. OTP by defalt 0 return.
+
+8. login data find body..............
+     export const Login = async (req, res) => {
+       try {
+          let reqBody = req.body;
+          let data = await UserModule.find(reqBody);
+          return res.json({
+        status: "success",
+        Message: "User registered successfully",
+        data: data,
+       });
+      }catch (error) {
+      return res.json({ status: "fail", Message: e.toString() });
+      }
+    };
+
+
+9. ProfileDetail......postname............
+   ===> postname ===> registered ----<> login ><< token => copy 
+   ===> postname ===>  header/body => token : token_copy_past
+
+10. update_profile .........................
+=> AuhtMiddleware.js ( add)
+=> headers = token (add)

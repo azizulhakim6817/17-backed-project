@@ -1,0 +1,663 @@
+###<< Epi-1 >>><<<<< Mongoose introduction >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@<< part-1 >>><<<<<< Mongoose ??????????????????????????
+
+1. What is Mongoose?
+   Mongoose an elegant MongoDB object modeling for Node.js.
+
+2. Where is used?
+   1. Provides Schema-base data modeling solution.
+   2. Type casting
+   3. Validation
+   4. Query building
+   5. Business logic
+
+###<< Epi-2 >>><<<<< Mongoose installation >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@<< part-1 >>><<<<<< Mongoose ??????????????????????????
+
+1. How to start?
+   1. install Mongoose
+   2. Create Database connection
+   3. Create fist Mongoose Model 
+   4. Work with mongoose model
+
+   @@@ installation packages :::::::::::::::::
+   "dependencies": {
+      "body-parser": "^1.20.2",
+      "cookie-parser": "^1.4.6",
+      "cors": "^2.8.5",
+      "dotenv": "^16.4.5",
+      "express": "^4.19.2",
+      "express-mongo-sanitize": "^2.2.0",
+      "express-rate-limit": "^7.4.0",
+      "helmet": "^7.1.0",
+      "hpp": "^0.2.3",
+      "jsonwebtoken": "^9.0.2",
+      "mongoose": "^8.6.1",
+      "multer": "^1.4.5-lts.1",
+      "mysql": "^2.18.1",
+      "nodemon": "^3.1.4",
+      "xss-clean": "^0.1.4"
+    }
+
+###<< Epi-3 >>><<<<< Mongoose Database connection >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@<< part-1 >>><<<<<< Database connection ??????????????????????????
+
+   1. uri maining? =>  Uniform Resource Identifier 
+
+//MongoDB Database connection..............................
+/* let URI = "mongodb://127.0.0.1:27017/studentID";
+let OPTION = { user: " ", pass: " " };
+mongoose
+  .connect(URI, ({autoIdex : true}))
+  .then(() => {
+    console.log("MongoDB is connnected");
+  })
+  .catch((err) => {
+    console.log("Database Error", err);
+  }); */
+
+//...................................................................
+/* let MONGODB_CONNECTION = "mongodb://127.0.0.1:27017/studentID";
+mongoose
+  .connect(MONGODB_CONNECTION)
+  .then(() => {
+    console.log("Database Connected");
+  })
+  .catch((err) => {
+    console.log("Database Error", err);
+  }); */
+
+//........................................................
+/* let URI = "mongodb://127.0.0.1:27017/studentID";
+mongoose
+  .connect(URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Database connection successful");
+  })
+  .catch((err) => {
+    console.error("Database connection error:", err);
+  }); */
+
+
+###<< Epi-3 >>><<<<< Mongoose Database connection >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@<< part-1 >>><<<<<< Database connection ??????????????????????????
+//MongoDB Database connection.......
+let URI = "mongodb://127.0.0.1:27017/studentID";
+let OPTION = { user: " ", pass: " " };
+
+mongoose
+  .connect(URI)
+  .then(() => {
+    console.log("db is connected!");
+  })
+  .catch((error) => {
+    console.log("db is not connected!");
+    console.log(error.message);
+    process.exit(1);
+  });
+
+###<< Epi-4 >>><<<<< Schema => Mongoose connnected >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@<< part-1 >>><<<<<< Schema ??????????????????????????
+const mongoose = require("mongoose");
+
+const DataSchema = mongoose.model({
+  Name: String,
+  Roll: String,
+  Class: String,
+  Remarks: String,
+});
+
+const studentsModel = mongoose.model("Studetnts", DataSchema);
+
+module.exports = studentsModel;
+
+###<< Epi-5 >>><<<<<>> create data  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@<< part-1 >>><<<<<< create data using Model ??????????????
+1. packages :::::::::::::::::::::::::::::::::::::
+   @@@ const bodyParser = require("body-parser");
+   @@@ app.use(bodyParser.json());
+
+2. const studentsModel = require("../models/user.js");
+
+// create data
+exports.InsertStudent = async (req, res) => {
+  try {
+    const studentData = req.body; // Renamed to better reflect the content
+    const newStudent = await studentsModel.create(studentData);
+
+    res.status(201).json({
+      status: "success",
+      data: newStudent,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error: error.message || "An error occurred while inserting the student",
+    });
+  }
+};
+
+###<< Epi-6 >>><<<<<>> Read Data  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+exports.readStudent = async (req, res) => {
+  try {
+    let Query = {};
+    let Projection = "Name Roll Class Remarks ";
+    let data = await studentsModel.find(Query, Projection);
+
+    res.status(201).json({ status: "Success", data: data });
+  } catch (error) {
+    res.status(401).json({ status: "fail", data: error });
+  }
+};
+
+###<< Epi-7 >>><<<<<>>  Update Data  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+exports.updateStudent = async (req, res) => {
+  let id = req.params.id;
+  let query = { _id: id };
+  let updateData = req.body;
+
+  try {
+    let data = await studentsModel.updateOne(query, updateData);
+    res.status(201).json({ status: "Success", data: data });
+  } catch (error) {
+    res.status(401).json({ status: "fail", data: error });
+  }
+};
+
+###<< Epi-8 >>><<<<<>> delete data  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//delete...........................................
+exports.deleteStudent = async (req, res) => {
+  let id = req.params.id;
+  let query = { _id: id };
+
+  try {
+    let data = await studentsModel.deleteOne(query);
+    res.status(201).json({ status: "Success", data: data });
+  } catch (error) {
+    res.status(401).json({ status: "fail", data: error });
+  }
+};
+
+###<< Epi-9 >>><<<<<>> mongoose Schema types   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    1. String
+    2. Number
+    3. Data
+    4. Buffer
+    5. Boolean
+    6. Mixed
+    7. ObjectId
+    8. Array
+    9. Decimal28
+    10. Map
+
+  const mongoose = require("mongoose");
+  const DataSchema = mongoose.Schema({
+      Name: {type: String},
+      Roll: {type: Number },
+      Class: {type: String},
+      Remarkes: {type: String},
+      Adult: {type: boolean},
+      comment: [],
+      details: {},
+      dob: Date.now,
+    });
+    
+    const ModelSchema = mongoose.model("users", DataSchema);
+    
+    export default ModelSchema;
+
+###<< Epi-10 >>><<<<<>> mongoose default Value/Version Key >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. date: {type: Date, default: Date.new}
+2. mongoose default key =  _id
+3. {versionKey: false} 
+4. Remarkes: { type: String, default: "No Remarks" },
+
+
+###<< Epi-11 >>><<<<<>> mongoose Validation-1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. Type casting Validation = class: {type: String}
+
+1. Required Validation = Name: {type: String, unique: true}
+
+3. Min-Max Number Validation = Roll: {type: Number, min: 6, max: 12}
+
+3. Roll: {
+        type: Number,
+        min: [6, "Minimum Roll 6 & Maximum Roll 12, But got {VALUE}"];
+        max: [12, "Minimum Roll 6 & Maximum Roll 12, But got {VALUE}"]
+}
+
+4. Enumerated type Validation : 
+   Class: {type: enum, {value: ["one", "two", "three", "four, "six"], message: "{VALUE} is not supported"}}
+
+5. Custom Validation :
+   Mobile: {
+     type: String,
+     validate: {
+     validato: funtion(value){
+        if(value.lenght!==11){
+          returnt false;
+        }else{
+          return true;
+        }
+      }
+      message: "11 Digit Phone Number Required";
+     }
+   }
+
+6. Regex Validation:
+   Mobile: {
+    type: String,
+    validate: {
+      funtion(value) {
+        return /^(?:\+?88|0088)?01[15-9]\d{8}$/test.(value);
+      },
+      message: porps =>"${porps.value} is not a valid phone Numbeer" ;
+    }
+   
+   }
+
+###<< Epi-12 >>><<<<<>> mongoose Validation-2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. const mongoose = require("mongoose");
+
+const stuenetSchema = mongoose.Schema(
+  {
+    Name: { type: String },
+    Roll: { type: String },
+    Class: { type: String },
+    },
+    { versionKey: false }
+    );
+    const studentsModel = mongoose.model("userStudentsID", stuenetSchema);
+    module.exports = studentsModel;
+    
+###<< Epi-13 >>><<<<<>> mongoose Validation-3 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. Roll => 6,7,8,9,10,11,12 .................
+Roll: {
+  type: Number,
+  min: [6, "Minimum Roll 6 & Maximum Roll 12, But got {VALUE}"];
+  max: [12, "Minimum Roll 6 & Maximum Roll 12, But got {VALUE}"]
+  }
+
+###<< Epi-14 >>><<<<<>> mongoose Validate/validato-4 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const mongoose = require("mongoose");
+
+const stuenetSchema = mongoose.Schema(
+  {
+    Name: { type: String },
+    Roll: { type: Number },
+    Class: { type: String },
+    Mobile: {
+      type: String,
+      validate: {
+        validator: function (value) {
+          if (value.lenght === 11) {
+            return true;
+          } else {
+            return false;
+          }
+        },
+        message: "11 Digite Mobile Number Required",
+      },
+    },
+  },
+  { versionKey: false }
+);
+const studentsModel = mongoose.model("userStudentsID", stuenetSchema);
+module.exports = studentsModel;
+
+###<< Epi-15 >>><<<<<>> mongoose Validation Regex-5 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+      1. Regex Bangladesh monbil regex code =>   https://stackoverflow.com/questions/30658946/validate-bangladeshi-phone-number-with-optional-88-or-01-preceeding-11-digits
+
+      2. /(^(\+88|0088)?(01){1}[3456789]{1}(\d){8})$/
+  
+      const mongoose = require("mongoose");
+
+      const stuenetSchema = mongoose.Schema(
+        {
+          Name: { type: String },
+          Roll: { type: Number },
+          Class: { type: String },
+          Mobile: {
+            type: String,
+            validate: {
+              validator: function (value) {
+                return /(^(\+88|0088)?(01){1}[3456789]{1}(\d){8})$/.test(value);
+              },
+              message: "Invalid Bangladesh Mobile Number",
+            },
+          },
+        },
+        { versionKey: false }
+      );
+      const studentsModel = mongoose.model("userStudentsID", stuenetSchema);
+      module.exports = studentsModel;
+
+###<< Epi-16 >>><<<<<>> Documentation Using Postman-1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. thred party library => postman / 
+2. download
+3. Open accout create / sign up 
+
+###<< Epi-17 >>><<<<<>> Documentation Using Postman-2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. workspaces -> create => project-1
+2. collection -> ceate => demo 
+3. create folder => userID
+3. add request  => InsertStudent-method-post
+3. add request  => read-method-get
+
+###<< Epi-18 >>><<<<<>> Documentation Using Postman-3 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. project..........
+<----Variable-------------------internal value------------------current value----------------------->
+<-----BASE_URL---------------http://localhost:9000/-------------http://localhost:9000/
+
+2. Authentication ?????????????????????????????????
+<----API Key---------------------------------------->
+1. Key =>
+2. Value => 
+2. Add to => headers / Query params
+
+<----Beara token---------------------------------------->
+1. token
+
+<----Basic Auth---------------------------------------->
+1. username
+2. password
+
+<----Windows NTLM authentication---------------------------------------->
+1. username
+2. password
+3. Domain
+4. workstation
+
+###<< Epi-19 >>><<<<<>> Documentation Using Postman-4 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. project..........
+<----Variable-------------------internal value------------------current value----------------------->
+<-----BASE_URL---------------http://localhost:9000/-------------http://localhost:9000/
+
+2. postman => {{BASE_URL}}/InsertStudent
+
+//@@@@ body..............................................
+1. mongoose object create => Schema => body
+
+2. Postman => body => row => json => { "name" : "Azizul" "Roll" : "144"} 
+
+//@@@ headers ..............................
+1. By default call headers => 9 hidden - by default postman set 
+2. 1. cache-control 2. postman-control 3. host 4. user-agent 5. accept-uncoding etc....
+
+//@@@ Authentication..........................................
+1. no-auth
+2. set all times => inherit auth parent
+
+//@@@ Query Params.........................................
+1. name-================== value =========description
+
+###<< Epi-20 >>><<<<<>> c + u + r + postman documnet-5 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+const studentsModel = require("../models/StuentsModel.js");
+
+// create data........................
+exports.InsertStudent = async (req, res) => {
+  try {
+    const studentData = req.body;
+    const newStudent = await studentsModel.create(studentData);
+
+    res.status(201).json({ status: "success", data: newStudent });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error: error.message || "An error occurred while inserting the student",
+    });
+  }
+};
+
+//read data ................
+exports.readStudent = async (req, res) => {
+  try {
+    let Query = {};
+    //let Projection = "Name Roll Class Remarks ";
+    let data = await studentsModel.find(Query);
+
+    res.status(201).json({ status: "Success", data: data });
+  } catch (error) {
+    res.status(401).json({ status: "fail", data: error });
+  }
+};
+
+//update data ................
+exports.updateStudent = async (req, res) => {
+  let id = req.params.id;
+  let query = { _id: id };
+  let updateData = req.body;
+
+  try {
+    let data = await studentsModel.updateOne(query, updateData);
+    res.status(201).json({ status: "Success", data: data });
+  } catch (error) {
+    res.status(401).json({ status: "fail", data: error });
+  }
+};
+
+###<< Epi-21 >>><<<<< collection export / import / download >> Using Postman-6 >>>>>>>>>>>>>>>>>>>>>>>>>>>
+ 1. psotname ..............
+    => collection export / import / download
+
+  //delete...........................................
+  exports.deleteStudent = async (req, res) => {
+  let id = req.params.id;
+  let query = { _id: id };
+
+  try {
+    let data = await studentsModel.deleteOne(query);
+    res.status(201).json({ status: "Success", data: data });
+  } catch (error) {
+    res.status(401).json({ status: "fail", data: error });
+  }
+};
+
+###<< Epi-22 >>><<<<< Documentation Using Postman-7 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. Folder click
+2. view complete Documentation 
+3. Publish 
+4. Publish URL => https://documenter.getpostman.com/view/36176527/2sAXqmAQyZ
+
+###<< Epi-23 >>><<<<< Documentation Using Postman-7 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+1. language seleted 
+2. URL 
+3. all documenter
+
+###<< Epi-24 >>><<<<< JWT Token Authentication-1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#### authentication & authrization ++++++++++++++++
+1. API Key = threed party authentication
+2. Bearer Token
+3. Basic Auth
+4. Digest Auth
+5. Auth 1.0
+6. Auth 2.0
+7. Hawk Authentication
+8. AWS Singnature
+9. NTLM authentication = Windows authentication
+
+###<< Epi-25 >>><<<<< Encorded-Decoded-create.middleware-applly.routes >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@ jwt = jsonwebtoken => jwt 
+
+@@@ Encoded---------------Ternsfer------------Decoded--------------->
+    oifsdalkj23-0djs -----------------------json form---------------------->    
+
+@@@ auth => jwt 
+1. How to Encoded json and create token.
+2. How to Decoded (json) and retrieve json 
+3. How to create auth middleware in express project
+4. How to applly auth middleware in Routes
+
+###<< Epi-26 >>><<<<< JWT Token Authentication-2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+1. Postname => Get =>  {{BASE_URL}}/CreateEncodedToken
+   token_key  => eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjYxNDIzNDUsImRhdGEiOnsiTmFtZ
+   Received token_key => Copy
+
+2. postname => Get => {{BASE_URL}}/DecordToken
+   headers => token_key = Copy - past 
+
+const jwt = require("jsonwebtoken");
+"status": "success token",
+    "data": {
+        "exp": 1726141688,
+        "data": {
+            "Name": "Aziz",
+            "Roll": "3029",
+            "Class": "programs"
+        },
+        "iat": 1726138088
+    }
+
+................................ VS-code .......................................................
+exports.CreateEncodedToken = (req, res) => {
+  let Playload = {
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+    data: { Name: "Aziz", Roll: "3029", Class: "programs" },
+  };
+
+  let Token = jwt.sign(Playload, "ScreatKey123");
+
+  res.send(Token);
+};
+
+exports.DecordToken = (req, res) => {
+  let token = req.headers["token_key"];
+  jwt.verify(token, "ScreatKey123", function (err, decoded) {
+    if (err) {
+      res.stastus(401).json({ status: "invalid token", data: err });
+    } else {
+      res.status(200).json({ status: "success token", data: decoded });
+    }
+  });
+};
+
+###<< Epi-27 >>><<<<< JWT Token Authentication-2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+###<< Epi-28 >>><<<<< JWT Token Authentication-2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+1. <----request---------middleware--------------response------------>
+2. tokenIssue.Contorller.js => 
+2. create  middleware => use Routes(api.js) => 
+
+// @@@ Encoded....token create ................................
+const jwt = require("jsonwebtoken");
+
+exports.TokenIssue = (req, res) => {
+  let Playload = {
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+    data: { Name: "Aziz", Roll: "3029", Class: "programs" },
+  };
+
+  let Token = jwt.sign(Playload, "ScreatKey123");
+
+  res.send(Token);
+};
+
+// @@@ Decoded token verify ............................
+
+const jwt = require("jsonwebtoken");
+
+module.exports = (req, res, next) => {
+  let token = req.headers["token_key"];
+  jwt.verify(token, "ScreatKey123", function (err, decoded) {
+    if (err) {
+      res.stastus(401).json({ status: "invalid token", data: err });
+    } else {
+      next();
+    }
+  });
+};
+
+###<< Epi-29 >>><<<<< Project introduction-1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@ Project Covers: ...........................
+1. Rest API introduction
+2. json Best practice
+3. request response model
+4. Rest API Bssic best practice
+5. Rest API Security practice
+6. Express.js Rest API Fundametal
+7. MongoDB Core Fundametal 
+8. mongoose
+9. Documentation
+10. jwt Auth 
+
+@@@ project features :..........................
+1. user Registration
+2. user Loing 
+3. user Auth By JWT Token
+4. user Profile Read
+5. user Profile update
+6. user to-do list create
+7. user to-do list read
+8. user to-do list update
+9. user to-do list delete 
+10. user to-do list Complete/Cancel Mark 
+11. user to-do list complete/Cancel Filter
+12. user to-do list Date Filter
+
+###<< Epi-30 >>><<<<< create project-1 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@ Essentioal packages : ...............................
+1. dotenv
+2. cors
+3. express-mongo-sanitize // mongoose use
+4. helmet
+4. hpp
+6. validator
+7. xss-clean
+..................................
+8. express
+9. mongoose //mongoDB-diver 
+10. bodyParser
+11. cooki-parser
+12. jsonwebtoken
+13. multer
+44. express-rate-limit
+
+###<< Epi-31 >>><<<<< create project-2 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+@@@ project stacture.............................
+1. index.js
+2. app.js
+3. config.env 
+4. src 
+1. routes
+2. middleware
+3. Contorller
+4. model
+
+###<< Epi-32 >>><<<<< create project-3 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+//Basic...Library import.......................................
+const express = require("express");
+const router = require("./src/routers/api.js");
+
+const app = new express();
+const bodyParser = require("body-parser");
+
+//Security Middleware...library import..............
+const rateLimiter = require("express-rate-limit");
+const helmet = require("helmet");
+const mongoSanitizer = require("express-mongo-sanitize");
+const xss = require("xss-clean");
+const hpp = require("hpp");
+const cors = require("cors");
+
+//Database connection......................
+const mongoose = require("mongoose");
+
+//Securiry Middleware Implementes use
+app.use(cors());
+app.use(helmet());
+app.use(mongoSanitizer());
+app.use(xss());
+app.use(hpp());
+
+//Body Parser Implementes use
+app.use(bodyParser.json());
+
+//request Rate Limiter Implementes use
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 3000 });
+
+###<< Epi-33 >>><<<<< create project-4 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
